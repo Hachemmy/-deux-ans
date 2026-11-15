@@ -2078,6 +2078,14 @@ label {
   color: #3a2320;
 }
 
+.note-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 .note-heading {
   margin: 0;
   color: #5e2138;

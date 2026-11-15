@@ -18,8 +18,11 @@ const musicAudio = document.querySelector(".music-audio");
 const musicDisc = document.querySelector(".music-disc");
 const noteForm = document.querySelector("#note-form");
 const noteMessage = document.querySelector("#note-message");
+const noteWebsite = document.querySelector("#note-website");
 const noteSubmit = document.querySelector("#note-submit");
 const noteStatus = document.querySelector("#note-status");
+const noteLoadedAt = Date.now();
+let lastNoteSentAt = 0;
 const memoryDialog = document.querySelector("#memory-dialog");
 const dialogCaption = document.querySelector("#dialog-caption");
 const dialogArt = document.querySelector(".dialog-art");
@@ -100,6 +103,7 @@ memoryCards.forEach((card, index) => {
   card.addEventListener("click", () => {
     showMemoryPhoto(index);
     memoryDialog.showModal();
+    document.querySelector("#dialog-close").focus();
   });
 });
 
@@ -153,6 +157,20 @@ if (emailjsReady) {
 noteForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
+  const isBot = noteWebsite.value.trim() !== "" || Date.now() - noteLoadedAt < 2000;
+
+  if (isBot) {
+    noteStatus.textContent = "Merci pour ton petit mot, il est bien arrivé ♥";
+    noteForm.reset();
+    return;
+  }
+
+  if (lastNoteSentAt && Date.now() - lastNoteSentAt < 30000) {
+    noteStatus.textContent = "Patiente un petit instant avant d’envoyer un autre mot…";
+    noteStatus.classList.add("is-error");
+    return;
+  }
+
   const text = noteMessage.value.trim();
 
   if (!text) {
@@ -177,6 +195,7 @@ noteForm.addEventListener("submit", async (event) => {
       message: text,
       date: new Date().toLocaleString("fr-FR"),
     });
+    lastNoteSentAt = Date.now();
     noteStatus.textContent = "Merci pour ton petit mot, il est bien arrivé ♥";
     noteForm.reset();
   } catch (error) {
